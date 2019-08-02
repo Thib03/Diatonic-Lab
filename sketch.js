@@ -76,15 +76,15 @@ class Note {
     this.d = deg(d);
     this.n = ndt(degToNdt(d)+a);
   }
-  
+
   alt() {
     return alt(this.n-degToNdt(this.d));
   }
-  
+
   alter(a) {
     this.n = ndt(this.n+a);
   }
-  
+
   enharm(up) {
     if(up) {
       this.d = deg(this.d+1);
@@ -93,19 +93,19 @@ class Note {
       this.d = deg(this.d-1);
     }
   }
-  
+
   altInt(note) {
     let d = deg(note.d-this.d+1);
     let n = ndt(note.n-this.n);
     return n-degToNdt(d);
   }
-  
+
   newNote(d,a) {
     var nD = deg(this.d+d-1);
     let n = ndt(degToNdt(d)+degToNdt(this.d)+this.alt())+a;
     return new Note(nD,alt(n-degToNdt(nD)));
   }
-  
+
   name() {
     var s;
     switch(this.d) {
@@ -133,7 +133,7 @@ class Note {
       default:
         s = "X";
     }
-    
+
     switch(this.alt()) {
       case -2:
         return concat(s, "bb");
@@ -148,10 +148,10 @@ class Note {
       default:
         return concat(s, "?");
     }
-    
+
     return s;
   }
-  
+
   guitar(corde) {
     var n0;
     switch(corde) {
@@ -176,10 +176,10 @@ class Note {
       default :
         return -1;
     }
-    
+
     return ndt(this.n-n0);
   }
-  
+
   violin(corde) {
     var n0;
     switch(corde) {
@@ -198,10 +198,10 @@ class Note {
       default :
         return -1;
     }
-  	
+
     return ndt(this.n-n0);
   }
-  
+
   draw(type,posX,posY,fact,d,ch=false,fret=0) {
 		var n = ndt(this.n);
     var couleur;
@@ -449,12 +449,12 @@ class Scale {
       this.notes[4].enharm(false);
     }
   }
-  
+
   alt(d1,d2) {
     return this.notes[deg(d1)-1].altInt(
       		 this.notes[deg(d1+d2-1)-1]);
   }
-  
+
   drawChord(type,chord,posX=0,posY=0,fact=1,fret=0,freVio=0) {
     var ch;
     switch(type) {
@@ -767,15 +767,15 @@ class Chord {
         						this.newScale('diminished');
     }
   }
-  
+
   newNote(d,a=0) {
     this.notes.push(this.notes[0].newNote(d,a));
   }
-  
+
   newScale(s) {
     this.scales.push(new Scale(this.notes[0],s));
   }
-  
+
   drawScale(type,sc,posX=0,posY=0,fact=1,fret=0) {
     var ch;
     switch(type) {
@@ -925,17 +925,17 @@ class Selector {
     this.x = 0;
     this.y = 0;
     this.f = 1;
-    
+
     this.notes =       ['C','D','E','F','G','A','B'];
     this.n = 0;
-    
+
     this.alterations = ['b','','#'];
     this.a = 1;
-    
+
     this.chordsM = [''];
     this.mc = 0; // 0, 1, 2, 3, 4, 5, 6
     this.cm = 0;
-    
+
     this.chords =      ['',
                         '6',
                         '69',
@@ -957,7 +957,7 @@ class Selector {
     this.c = 0;
     this.chord = new Chord('C');
     this.chordSelect = false;
-    
+
     this.scales =			 [['major',
                          'dorian',
                          'phrygian',
@@ -982,10 +982,10 @@ class Selector {
     this.sca = 0; // 0, 1, 2
     this.ms = 0; // 0, 1, 2, 3, 4, 5, 6
     this.scale = new Scale(new Note(1,0),'major');
-    
+
     this.s = 0;
     this.scaleSelect = false;
-    
+
     this.modes =			 ['I',
                         'II',
                         'III',
@@ -993,39 +993,39 @@ class Selector {
                         'V',
                         'VI',
                         'VII']
-    
+
     this.switch = false; // ^
-    
+
     this.repr = ['circle',
                  'guitar',
             		 'violin',
                  'harp'];
 	this.fR = [0.56,0.043,0.065,0.585];
 	this.r = 0;
-    
+
     this.fret = 0;
     this.freVio = 0;
   }
-  
+
   position(x,y,fact) {
     this.x = x;
     this.y = y;
     this.f = fact;
   }
-  
+
   clicked(mX,mY) {
     setTimeout(function(){
     	ready = true;
 		}, 400);
-    
+
     var r = this.f*0.2*dimension();
     var a,x,y;
-    
+
     var found = false;
-    
+
     var xg = -0.32*dimension();
     var yg = 0.425*dimension();
-    
+
     // representation selection
     if(!found) {
       y = height/2+yg;
@@ -1041,7 +1041,7 @@ class Selector {
         }
       }
   	}
-    
+
     // fret selection
     if(this.r == 1) {
       x = width/2-0.02*dimension();
@@ -1056,7 +1056,7 @@ class Selector {
           found = true;
         }
     }
-    
+
     // degree
     if(!found) {
       for(let n = 0; n < 7; n++) {
@@ -1069,7 +1069,7 @@ class Selector {
         }
       }
     }
-    
+
     // alteration
     if(!found) {
       x = this.x+width/2+0.64*r;
@@ -1082,7 +1082,7 @@ class Selector {
         }
       }
     }
-    
+
     // switch
   	if(!found) {
       x = this.x+width/2+2.48*r;
@@ -1158,7 +1158,7 @@ class Selector {
         found = true;
       }
     }
-    
+
     // chord
     if(!found) {
       x = this.x+width/2+2.48*r;
@@ -1177,7 +1177,7 @@ class Selector {
         found = true;
       }
     }
-    
+
     if(this.chordSelect && !found) {
       if(this.switch) { // v
         var posY = -0.15*dimension();
@@ -1252,7 +1252,7 @@ class Selector {
       	}
       }
     }
-    
+
     // scale
     if(!found) {
       x = this.x+width/2+2.48*r;
@@ -1271,7 +1271,7 @@ class Selector {
         found = true;
       }
     }
-    
+
     if(this.scaleSelect && !found) {
       if(this.switch) { // v
         var Y = -0.15*dimension();
@@ -1339,7 +1339,7 @@ class Selector {
         }
       }
     }
-    
+
     if(found) {
       if(this.switch) { // v
       	this.chord = new Chord(concat(new Note(ndt(this.n+1),
@@ -1353,7 +1353,7 @@ class Selector {
       this.draw();
   	}
   }
-  
+
   draw() {
     noStroke();
     fill(255);
@@ -1362,19 +1362,19 @@ class Selector {
          height/2,
          3/2*dimension(),
       	 dimension());
-    
+
     let posX = 0;
     let posY = this.y;
     let fact = this.f;
-    
+
     var xg = -0.32*dimension();
     var yg = 0.425*dimension();
-    
+
     // representation selection
     var nbrr = this.repr.length;
     var x;
     var y = height/2+yg;
-    textAlign(CENTER,CENTER);    
+    textAlign(CENTER,CENTER);
     textSize(fact*0.065*dimension());
     stroke(87);
     strokeWeight(lineWeight());
@@ -1400,7 +1400,7 @@ class Selector {
         text(this.repr[r],x,y+fact*0.003*dimension());
       }
     }
-    
+
     // fret selection
     if(this.r == 1) {
       x = width/2-0.02*dimension();
@@ -1433,7 +1433,7 @@ class Selector {
       line(x+0.01*dimension(),y,
            x,y-0.018*dimension());
     }
-    
+
     // text
     if(!this.chordSelect && !this.scaleSelect) {
       x = width/2+this.x;
@@ -1444,12 +1444,12 @@ class Selector {
       text('Diatonic Lab',x,y);
       x = width/2+this.x-0.26*dimension();
       y = height/2-0.08*dimension();
-      textAlign(LEFT,CENTER);  
+      textAlign(LEFT,CENTER);
       textSize(fact*0.06*dimension());
       text('This app works in two modes. The switch\nfrom one to the other is done by clicking\nthe arrow below. The modes are:\n\n      Scale to chord (up)\n\n            Choose a scale, and explore\n            the chords within this scale\n\n      Chord to scale (down)\n\n            Pick a chord, and choose\n            a scale matching that chord',x,y);
-      textAlign(CENTER,CENTER);  
+      textAlign(CENTER,CENTER);
     }
-        
+
     // degree
     var r = fact*0.2*dimension();
     stroke(87);
@@ -1476,7 +1476,7 @@ class Selector {
     	text(this.notes[i],x,y+fact*0.0065*dimension());
       }
     }
-    
+
     // alteration
     x = this.x+width/2+posX+0.64*r;
     r *= 0.85;
@@ -1499,7 +1499,7 @@ class Selector {
     		text(this.alterations[i],x,y+fact*0.0065*dimension());
       }
     }
-    
+
     // switch
     x = this.x+width/2+posX+2.48*r;
     stroke(87);
@@ -1529,7 +1529,7 @@ class Selector {
       line(x+0.01*dimension(),y,
            x,y-0.018*dimension());
     }
-     
+
     // chord
     x = this.x+width/2+posX+2.48*r;
     y = height/2+posY-r;
@@ -1600,7 +1600,7 @@ class Selector {
           fill(i==this.mc?217:87);
           text(s,x,y+fact*0.0065*dimension());
         }
-        
+
         let nbrc = this.chords.length;
         posY = 0.05*dimension();
         this.chordsM = [];
@@ -1743,7 +1743,7 @@ class Selector {
     	fill(87);
     	text('scale',x,y+fact*0.003*dimension());
     }
-    
+
   	// representated scale
     if(this.switch) { // v
       this.chord.drawScale(this.repr[this.r],
@@ -1769,23 +1769,27 @@ function setup()
 {
   createCanvas(windowWidth,windowHeight);
 	background(255);
-  
+
   selector.position(0.4*dimension(),0.35*dimension(),0.48);
   selector.draw();
+
+  mic = new p5.AudioIn();
+  mic.start();
 }
 
 function draw()
 {
-  
+  var vol = mic.getLevel();
+  console.log(vol);
 }
 
 function windowResized()
 {
   resizeCanvas(windowWidth,windowHeight);
   background(255);
-  
+
   selector.position(0.4*dimension(),0.35*dimension(),0.48);
-  selector.draw(); 
+  selector.draw();
 }
 
 function mousePressed() {
