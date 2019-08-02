@@ -1765,6 +1765,8 @@ class Selector {
 
 var selector = new Selector();
 
+var mic;
+
 function setup()
 {
   createCanvas(windowWidth,windowHeight);
