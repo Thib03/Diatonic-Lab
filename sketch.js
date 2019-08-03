@@ -1775,14 +1775,29 @@ function setup()
   selector.position(0.4*dimension(),0.35*dimension(),0.48);
   selector.draw();
 
+  /*var myDiv = createDiv('click to start audio');
+  myDiv.position(0, 0);
+
+  var mySynth = new p5.MonoSynth();
+
+  // This won't play until the context has started
+  mySynth.play('A6');*/
+
   mic = new p5.AudioIn();
   mic.start();
+
+  // Start the audio context on a click/touch event
+  userStartAudio().then(function() {
+     console.log('Oooooooooook !!!');
+   });
 }
 
 function draw()
 {
   var vol = mic.getLevel();
-  console.log(vol);
+  if(vol > 0) {
+    console.log(vol);
+  }
 }
 
 function windowResized()
