@@ -1402,39 +1402,6 @@ class Selector {
       }
     }
 
-    // fret selection
-    if(this.r == 1) {
-      x = width/2-0.02*dimension();
-      y = height/2-0.329*dimension();
-      noStroke();
-      fill(87);
-      textSize(fact*0.15*dimension());
-      text(this.fret,x-0.09*dimension(),y-0.04*dimension());
-      stroke(87);
-      line(x,y,x,y-0.08*dimension());
-      noStroke();
-      fill(217);
-      circle(x,y,fact*0.065*dimension());
-      stroke(87);
-      line(x,y+0.018*dimension(),
-           x,y-0.018*dimension());
-      line(x-0.01*dimension(),y,
-           x,y+0.018*dimension());
-      line(x+0.01*dimension(),y,
-           x,y+0.018*dimension());
-      y -= 0.08*dimension();
-      noStroke();
-      fill(217);
-      circle(x,y,fact*0.065*dimension());
-      stroke(87);
-      line(x,y+0.018*dimension(),
-           x,y-0.018*dimension());
-      line(x-0.01*dimension(),y,
-           x,y-0.018*dimension());
-      line(x+0.01*dimension(),y,
-           x,y-0.018*dimension());
-    }
-
     // text
     if(!this.chordSelect && !this.scaleSelect) {
       x = width/2+this.x;
@@ -1745,6 +1712,39 @@ class Selector {
     	text('scale',x,y+fact*0.003*dimension());
     }
 
+    // fret selection
+    if(this.r == 1) {
+      x = width/2-0.02*dimension();
+      y = height/2-0.329*dimension();
+      noStroke();
+      fill(87);
+      textSize(fact*0.15*dimension());
+      text(this.fret,x-0.09*dimension(),y-0.04*dimension());
+      stroke(87);
+      line(x,y,x,y-0.08*dimension());
+      noStroke();
+      fill(217);
+      circle(x,y,fact*0.065*dimension());
+      stroke(87);
+      line(x,y+0.018*dimension(),
+           x,y-0.018*dimension());
+      line(x-0.01*dimension(),y,
+           x,y+0.018*dimension());
+      line(x+0.01*dimension(),y,
+           x,y+0.018*dimension());
+      y -= 0.08*dimension();
+      noStroke();
+      fill(217);
+      circle(x,y,fact*0.065*dimension());
+      stroke(87);
+      line(x,y+0.018*dimension(),
+           x,y-0.018*dimension());
+      line(x-0.01*dimension(),y,
+           x,y-0.018*dimension());
+      line(x+0.01*dimension(),y,
+           x,y-0.018*dimension());
+    }
+
   	this.redraw();
   }
 
@@ -1771,11 +1771,11 @@ class Selector {
           angle += 2*PI;
         }
       }
-      if(Math.abs(angle - a) > PI / 3) {
+      if(Math.abs(angle - a) > 2*PI/3) {
         angle = a;
       }
       else {
-        angle = lerp(angle, a, 0.2);
+        angle = lerp(angle, a, 0.1);
       }
       //angle = a;
       let x = width/2 +posX+r*cos(angle);
@@ -1822,6 +1822,7 @@ var selector = new Selector();
 var audioContext;
 var mic, freq;
 var audioSwitch = false;
+var micLevel;
 
 function setup()
 {
@@ -1833,6 +1834,7 @@ function setup()
 
   audioContext = getAudioContext();
   mic = new p5.AudioIn();
+  micLevel = mic.getLevel();
   mic.start(startPitch);
 
   // Start the audio context on a click/touch event
@@ -1871,7 +1873,9 @@ function modelLoaded() {
 
 function getPitch() {
   pitch.getPitch(function(err, frequency) {
-    if (frequency) {
+    //micLevel = mic.getLevel();
+    micLevel = lerp(micLevel,mic.getLevel(),0.1);
+    if (frequency && micLevel > 0.05) {
       audioSwitch = true;
       freq = frequency;
       selector.redraw();
