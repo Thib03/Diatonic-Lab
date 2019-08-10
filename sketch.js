@@ -1,4 +1,5 @@
 var ready = true;
+var angle = 0;
 
 function dimension(type = 'global')
 {
@@ -1744,11 +1745,45 @@ class Selector {
     	text('scale',x,y+fact*0.003*dimension());
     }
 
-  	// representated scale
+  	this.redraw();
+  }
+
+  redraw() {
+    var posX = -0.32*dimension();
+    var posY = -0.07*dimension();
+    noStroke();
+    fill(255);
+    circle(width/2+posX,height/2+posY,2*this.fR[this.r]*0.36*dimension());
+
+    if(audioSwitch && this.r == 0) {
+      var pitchClass = 12*log(freq/16.3515)/log(2);
+      while(pitchClass >= 12) {
+        pitchClass -= 12;
+      }
+      var fact = 1.5*this.fR[this.r];
+      var r = fact*0.36*dimension();
+      var a = PI/2 - pitchClass*PI/6;
+      if(Math.abs(angle - a) > PI) {
+        if(a < angle) {
+          angle -= 2*PI;
+        }
+        else {
+          angle += 2*PI;
+        }
+      }
+      angle = lerp(angle, a, 0.2);
+      //angle = a;
+      let x = width/2 +posX+r*cos(angle);
+      let y = height/2+posY-r*sin(angle);
+      fill(87);
+      circle(x,y,fact*1.3*0.08*dimension());
+    }
+
+    // representated scale
     if(this.switch) { // v
       this.chord.drawScale(this.repr[this.r],
                            this.s,
-                           xg,-0.07*dimension(),
+                           posX,posY,
                            1.5*this.fR[this.r],this.fret,this.freVio);
     }
     else { // ^
@@ -1756,16 +1791,32 @@ class Selector {
                            new Chord(concat(new Note(this.n+1,
                                                      this.a-1).name(),
                                             this.chordsM[this.cm])),
-                           xg,-0.07*dimension(),
+                           posX,posY,
                            1.5*this.fR[this.r],this.fret,this.freVio);
     }
-    textSize(fact*0.065*dimension());
+    textSize(this.f*0.065*dimension());
   }
+}
+
+function pitchToFreq(pitCla) {
+  return 27.5 * pow(2,(pitCla-21)/12); // A0 = 27.5 Hz = 21 (MIDI number)
+}
+
+function pitchToFreqs(pitCla) {
+  var fpc = pitchToFreq(pitCla);
+  var freqs = new Array();
+
+  freqs[0] = fpc / pow(2,1/24);
+  freqs[1] = fpc * pow(2,1/24);
+
+  return freqs;
 }
 
 var selector = new Selector();
 
-var mic;
+var audioContext;
+var mic, freq;
+var audioSwitch = false;
 
 function setup()
 {
@@ -1775,16 +1826,9 @@ function setup()
   selector.position(0.4*dimension(),0.35*dimension(),0.48);
   selector.draw();
 
-  /*var myDiv = createDiv('click to start audio');
-  myDiv.position(0, 0);
-
-  var mySynth = new p5.MonoSynth();
-
-  // This won't play until the context has started
-  mySynth.play('A6');*/
-
+  audioContext = getAudioContext();
   mic = new p5.AudioIn();
-  mic.start();
+  mic.start(startPitch);
 
   // Start the audio context on a click/touch event
   userStartAudio().then(function() {
@@ -1792,12 +1836,7 @@ function setup()
    });
 }
 
-function draw()
-{
-  var vol = mic.getLevel();
-  if(vol > 0) {
-    console.log(vol);
-  }
+function draw() {
 }
 
 function windowResized()
@@ -1814,4 +1853,28 @@ function mousePressed() {
     ready = false;
   	ready = selector.clicked(mouseX,mouseY);
   }
+}
+
+function startPitch() {
+  pitch = ml5.pitchDetection('./model/', audioContext , mic.stream, modelLoaded);
+}
+
+function modelLoaded() {
+  console.log('Model loaded');
+  getPitch();
+}
+
+function getPitch() {
+  pitch.getPitch(function(err, frequency) {
+    if (frequency) {
+      audioSwitch = true;
+      freq = frequency;
+      selector.redraw();
+    } else if(audioSwitch == true) {
+      audioSwitch = false;
+      selector.redraw();
+      console.log('No pitch detected');
+    }
+    getPitch();
+  })
 }
