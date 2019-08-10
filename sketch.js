@@ -1771,7 +1771,12 @@ class Selector {
           angle += 2*PI;
         }
       }
-      angle = lerp(angle, a, 0.2);
+      if(Math.abs(angle - a) > PI / 3) {
+        angle = a;
+      }
+      else {
+        angle = lerp(angle, a, 0.2);
+      }
       //angle = a;
       let x = width/2 +posX+r*cos(angle);
       let y = height/2+posY-r*sin(angle);
