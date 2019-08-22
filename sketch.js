@@ -1,5 +1,8 @@
 var ready = true;
+
 var angle = 0;
+
+var micButton;
 
 function dimension(type = 'global')
 {
@@ -1799,6 +1802,7 @@ class Selector {
                            posX,posY,
                            1.5*this.fR[this.r],this.fret,this.freVio);
     }
+    //micButton.draw();
     textSize(this.f*0.065*dimension());
   }
 }
@@ -1817,7 +1821,7 @@ function pitchToFreqs(pitCla) {
   return freqs;
 }
 
-var selector = new Selector();
+var selector;
 
 var audioContext;
 var mic, freq;
@@ -1828,6 +1832,21 @@ function setup()
 {
   createCanvas(windowWidth,windowHeight);
 	background(255);
+
+  micButton = new Clickable();
+  micButton.color = 217;
+  micButton.cornerRadius = 0;
+  micButton.strokeWeight = 0;
+  micButton.text = '';
+
+  micButton.onPress = function() {
+    this.color = 87;
+  }
+
+  micButton.resize(0.1*dimension(),0.1*dimension());
+  micButton.locate(width/2,height/2);
+
+  selector = new Selector();
 
   selector.position(0.4*dimension(),0.35*dimension(),0.48);
   selector.draw();
@@ -1875,7 +1894,7 @@ function getPitch() {
   pitch.getPitch(function(err, frequency) {
     //micLevel = mic.getLevel();
     micLevel = lerp(micLevel,mic.getLevel(),0.1);
-    if (frequency && micLevel > 0.05) {
+    if (frequency && micLevel > 0.025) {
       audioSwitch = true;
       freq = frequency;
       selector.redraw();
@@ -1886,4 +1905,6 @@ function getPitch() {
     }
     getPitch();
   })
+  //console.log(mic.getLevel());
+  //getPitch();
 }
