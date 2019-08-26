@@ -1978,7 +1978,8 @@ function setup() {
   selector.draw();
 
   if(navigator.platform.includes('Win') ||
-     navigator.platform.includes('Mac')) {
+     navigator.platform.includes('Mac') ||
+     navigator.platform.includes('Linux')) {
     audioContext = getAudioContext();
     mic = new p5.AudioIn();
     micLevel = mic.getLevel();
