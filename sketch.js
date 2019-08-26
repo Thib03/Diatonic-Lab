@@ -1977,14 +1977,17 @@ function setup() {
   selector.position(0.4*dimension(),0.35*dimension(),0.48);
   selector.draw();
 
-  audioContext = getAudioContext();
-  mic = new p5.AudioIn();
-  micLevel = mic.getLevel();
-  mic.start(startPitch);
+  if(navigator.platform.includes('Win') ||
+     navigator.platform.includes('Mac')) {
+    audioContext = getAudioContext();
+    mic = new p5.AudioIn();
+    micLevel = mic.getLevel();
+    mic.start(startPitch);
+  }
 
   // Start the audio context on a click/touch event
   userStartAudio().then(function() {
-     console.log('Oooooooooook !!!');
+     console.log('Audio started');
    });
 }
 
