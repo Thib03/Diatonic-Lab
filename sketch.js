@@ -4,8 +4,7 @@ var angle = 0;
 
 var micButton;
 
-function dimension(type = 'global')
-{
+function dimension(type = 'global') {
   //switch(type) {
     //case 'global' :
       if (Math.min(2/3*width,height) == height) {
@@ -50,8 +49,7 @@ function alt(a)
   return ((a+5) % 12 + 12) % 12 - 5;
 }
 
-function degToNdt(d)
-{
+function degToNdt(d) {
   d = deg(d);
   switch(d) {
     case 1:
@@ -184,6 +182,32 @@ class Note {
     return ndt(this.n-n0);
   }
 
+  piano() {
+    var xp = -1;
+    switch(this.n) {
+      case 11:
+        xp++;
+      case 9:
+        xp++;
+      case 7:
+        xp++;
+      case 5:
+        xp++;
+        return [xp,0];
+        break;
+      case 4:
+        xp++;
+      case 2:
+        xp++;
+      case 0:
+        xp++;
+        return [xp,0];
+        break;
+      default:
+        return [this.n,1];
+    }
+  }
+
   violin(corde) {
     var n0;
     switch(corde) {
@@ -249,6 +273,35 @@ class Note {
     				textSize(fact*(ch?fCh:fSc)*0.4*dimension());
     				text(this.name(),x,y+fact*0.04*dimension());
           }
+        }
+        break;
+      case 'piano' :
+        var l = 0.7*dimension();
+        var l0 = l/24;
+        var l3 = 5/12*l/6;
+        var l4 = 7/12*l/8;
+        var h = 0.2*dimension()
+        var x = posX;
+        var y = posY;
+        var pos = this.piano();
+        noStroke();
+        fill(couleur[0],couleur[1],couleur[2]);
+        if(pos[1] == 0) {
+          if(this.n < 5) {
+            x = x-l/2+l3*(1/2+pos[0]);
+            rect(x,y,l3,h);
+            rect(x+l/2,y,l3,h);
+          }
+          else {
+            x = x-l/2+3*l3+l4*(1/2+pos[0]);
+            rect(x,y,l3,h);
+            rect(x+l/2,y,l3,h);
+          }
+        }
+        else {
+          x = x-l/2+l0*(1/2+pos[0]);
+          rect(x,y-h/4,l0,h/2);
+          rect(x+l/2,y-h/4,l0,h/2);
         }
         break;
       case 'violin' :
@@ -515,7 +568,7 @@ class Scale {
               ch = true;
             }
           }
-    		  this.notes[i].draw(type,posX,posY,fact,deg(this.notes[i].d-this.notes[0].d+1),ch,fret);
+    		  this.notes[i].draw(type,posX,posY,fact,deg(this.notes[i].d-this.notes[0].d+1),ch);
     		}
         posX = -0.07*dimension();
         fill(87);
@@ -524,6 +577,75 @@ class Scale {
     	text(chord.name,width/2+posX,height/2+posY-0.033735*dimension());
         textSize(0.04875*dimension());
     	text(this.name,width/2+posX,height/2+posY+0.04875*dimension());
+        break;
+      case 'piano' :
+        var l = 0.7*dimension();
+        var l0 = l/24;
+        var l3 = 5/12*l/6;
+        var l4 = 7/12*l/8;
+        var h = 0.2*dimension()
+        var x = width/2+posX;
+        var y = height/2+posY+0.14*dimension();
+        for(i = 0; i < this.notes.length; i++) {
+    		 this.notes[i].draw(type,x,y,fact,deg(this.notes[i].d-this.notes[0].d+1),false,fret);
+    		}
+        stroke(87);
+        noFill();
+        strokeWeight(0.8*lineWeight());
+        rect(x,y,l,h);
+        for(let t0 = 0; t0 < 12; t0++) {
+          let x0 = x-l/2+t0*l0;
+          if(t0 == 1 || t0 == 3 || t0 == 6 || t0 == 8 || t0 == 10) {
+            var isNote = false;
+            var n;
+            for(n = 0; n < 7; n++) {
+              if(this.notes[n].n == t0) {
+                console.log(n);
+                isNote = true;
+                break;
+              }
+            }
+            if(isNote) {
+              this.notes[n].draw(type,x,y,fact,deg(this.notes[n].d-this.notes[0].d+1),false,fret);
+              noFill();
+              stroke(87);
+            }
+            else {
+              noStroke();
+              fill(87);
+            }
+            rect(x0+l0/2,y-h/4,l0,h/2);
+            rect(x0+l/2+l0/2,y-h/4,l0,h/2);
+          }
+          else if(t0 == 0 || t0 == 5) {
+            stroke(87);
+            noFill();
+            if(t0 != 0) {
+              line(x0,y-h/2,x0,y+h/2);
+            }
+            line(x0+l/2,y-h/2,x0+l/2,y+h/2);
+          }
+        }
+        stroke(87);
+        noFill();
+        for(let t = 1; t < 3; t++) {
+          let x3 = x-l/2+t*l3;
+          line(x3,y,x3,y+h/2);
+          line(x3+l/2,y,x3+l/2,y+h/2);
+        }
+        for(let t = 1; t < 4; t++) {
+          let x4 = x-l/2+3*l3+t*l4;
+          line(x4,y,x4,y+h/2);
+          line(x4+l/2,y,x4+l/2,y+h/2);
+        }
+        posY -= 0.2*dimension();
+        fill(87);
+        noStroke();
+    		textAlign(CENTER,CENTER);
+    		textSize(0.11*dimension());
+    		text(chord.name,width/2+posX,height/2+posY-0.045*dimension());
+        textSize(0.067*dimension());
+    		text(this.name,width/2+posX,height/2+posY+0.063*dimension());
         break;
       case 'violin' :
         posX -= 0.132*dimension();
@@ -846,6 +968,8 @@ class Chord {
         textSize(0.04875*dimension());
     	text(this.scales[sc].name,width/2+posX,height/2+posY+0.04875*dimension());
         break;
+      case 'piano' :
+        break;
       case 'violin' :
         posX -= 0.132*dimension();
         stroke(87);
@@ -1002,9 +1126,10 @@ class Selector {
 
     this.repr = ['circle',
                  'guitar',
+                 'piano',
             		 'violin',
                  'harp'];
-	this.fR = [0.56,0.043,0.065,0.585];
+	this.fR = [0.56,0.043,1,0.065,0.585];
 	this.r = 0;
 
     this.fret = 0;
@@ -1035,9 +1160,9 @@ class Selector {
       y = height/2+yg;
       var nbrr = this.repr.length;
       for(let r = 0; r < nbrr; r++) {
-        x = xg+width/2+0.18*(r-0.5*(nbrr-1))*dimension();
-        if(mX >  x-this.f*0.3*dimension()/2 &&
-           mX <= x+this.f*0.3*dimension()/2 &&
+        x = xg+width/2+0.15*(r-0.5*(nbrr-1))*dimension();
+        if(mX >  x-this.f*0.25*dimension()/2 &&
+           mX <= x+this.f*0.25*dimension()/2 &&
            mY >  y-this.f*0.13*dimension()/2 &&
            mY <= y+this.f*0.13*dimension()/2) {
           this.r = r;
@@ -1382,24 +1507,24 @@ class Selector {
     textSize(fact*0.065*dimension());
     stroke(87);
     strokeWeight(lineWeight());
-    line(xg+width/2-0.2*(0.5*(nbrr-1))*dimension(),
+    line(xg+width/2-0.15*(0.5*(nbrr-1))*dimension(),
          y,
-         xg+width/2+0.2*(nbrr-1-0.5*(nbrr-1))*dimension(),
+         xg+width/2+0.15*(nbrr-1-0.5*(nbrr-1))*dimension(),
          y);
     rectMode(CENTER);
     for(let r = 0; r < nbrr; r++) {
-      x = xg+width/2+0.18*(r-0.5*(nbrr-1))*dimension();
+      x = xg+width/2+0.15*(r-0.5*(nbrr-1))*dimension();
       if(r == this.r) {
         noStroke();
         fill(87);
-        rect(x,y,fact*0.3*dimension(),fact*0.13*dimension());
+        rect(x,y,fact*0.25*dimension(),fact*0.13*dimension());
         fill(217);
         text(this.repr[r],x,y+fact*0.003*dimension());
       }
       else {
         noStroke();
         fill(217);
-        rect(x,y,fact*0.3*dimension(),fact*0.13*dimension());
+        rect(x,y,fact*0.25*dimension(),fact*0.13*dimension());
         fill(87);
         text(this.repr[r],x,y+fact*0.003*dimension());
       }
@@ -1754,37 +1879,39 @@ class Selector {
   redraw() {
     var posX = -0.32*dimension();
     var posY = -0.07*dimension();
-    noStroke();
-    fill(255);
-    circle(width/2+posX,height/2+posY,2*this.fR[this.r]*0.36*dimension());
 
-    if(audioSwitch && this.r == 0) {
-      var pitchClass = 12*log(freq/16.3515)/log(2);
-      while(pitchClass >= 12) {
-        pitchClass -= 12;
-      }
-      var fact = 1.5*this.fR[this.r];
-      var r = fact*0.36*dimension();
-      var a = PI/2 - pitchClass*PI/6;
-      if(Math.abs(angle - a) > PI) {
-        if(a < angle) {
-          angle -= 2*PI;
+    if(this.r == 0) {
+      noStroke();
+      fill(255);
+      circle(width/2+posX,height/2+posY,2*this.fR[this.r]*0.36*dimension());
+      if(audioSwitch) {
+        var pitchClass = 12*log(freq/16.3515)/log(2);
+        while(pitchClass >= 12) {
+          pitchClass -= 12;
+        }
+        var fact = 1.5*this.fR[this.r];
+        var r = fact*0.36*dimension();
+        var a = PI/2 - pitchClass*PI/6;
+        if(Math.abs(angle - a) > PI) {
+          if(a < angle) {
+            angle -= 2*PI;
+          }
+          else {
+            angle += 2*PI;
+          }
+        }
+        if(Math.abs(angle - a) > 2*PI/3) {
+          angle = a;
         }
         else {
-          angle += 2*PI;
+          angle = lerp(angle, a, 0.1);
         }
+        //angle = a;
+        let x = width/2 +posX+r*cos(angle);
+        let y = height/2+posY-r*sin(angle);
+        fill(87);
+        circle(x,y,fact*1.3*0.08*dimension());
       }
-      if(Math.abs(angle - a) > 2*PI/3) {
-        angle = a;
-      }
-      else {
-        angle = lerp(angle, a, 0.1);
-      }
-      //angle = a;
-      let x = width/2 +posX+r*cos(angle);
-      let y = height/2+posY-r*sin(angle);
-      fill(87);
-      circle(x,y,fact*1.3*0.08*dimension());
     }
 
     // representated scale
@@ -1828,8 +1955,7 @@ var mic, freq;
 var audioSwitch = false;
 var micLevel;
 
-function setup()
-{
+function setup() {
   createCanvas(windowWidth,windowHeight);
 	background(255);
 
@@ -1865,8 +1991,7 @@ function setup()
 function draw() {
 }
 
-function windowResized()
-{
+function windowResized() {
   resizeCanvas(windowWidth,windowHeight);
   background(255);
 
