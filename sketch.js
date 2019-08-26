@@ -600,7 +600,6 @@ class Scale {
             var n;
             for(n = 0; n < 7; n++) {
               if(this.notes[n].n == t0) {
-                console.log(n);
                 isNote = true;
                 break;
               }
@@ -969,6 +968,72 @@ class Chord {
     	text(this.scales[sc].name,width/2+posX,height/2+posY+0.04875*dimension());
         break;
       case 'piano' :
+        var l = 0.7*dimension();
+        var l0 = l/24;
+        var l3 = 5/12*l/6;
+        var l4 = 7/12*l/8;
+        var h = 0.2*dimension()
+        var x = width/2+posX;
+        var y = height/2+posY+0.14*dimension();
+        for(i = 0; i < this.scales[sc].notes.length; i++) {
+         this.scales[sc].notes[i].draw(type,x,y,fact,deg(this.scales[sc].notes[i].d-this.scales[sc].notes[0].d+1),false,fret);
+        }
+        stroke(87);
+        noFill();
+        strokeWeight(0.8*lineWeight());
+        rect(x,y,l,h);
+        for(let t0 = 0; t0 < 12; t0++) {
+          let x0 = x-l/2+t0*l0;
+          if(t0 == 1 || t0 == 3 || t0 == 6 || t0 == 8 || t0 == 10) {
+            var isNote = false;
+            var n;
+            for(n = 0; n < 7; n++) {
+              if(this.scales[sc].notes[n].n == t0) {
+                isNote = true;
+                break;
+              }
+            }
+            if(isNote) {
+              this.scales[sc].notes[n].draw(type,x,y,fact,deg(this.scales[sc].notes[n].d-this.scales[sc].notes[0].d+1),false,fret);
+              noFill();
+              stroke(87);
+            }
+            else {
+              noStroke();
+              fill(87);
+            }
+            rect(x0+l0/2,y-h/4,l0,h/2);
+            rect(x0+l/2+l0/2,y-h/4,l0,h/2);
+          }
+          else if(t0 == 0 || t0 == 5) {
+            stroke(87);
+            noFill();
+            if(t0 != 0) {
+              line(x0,y-h/2,x0,y+h/2);
+            }
+            line(x0+l/2,y-h/2,x0+l/2,y+h/2);
+          }
+        }
+        stroke(87);
+        noFill();
+        for(let t = 1; t < 3; t++) {
+          let x3 = x-l/2+t*l3;
+          line(x3,y,x3,y+h/2);
+          line(x3+l/2,y,x3+l/2,y+h/2);
+        }
+        for(let t = 1; t < 4; t++) {
+          let x4 = x-l/2+3*l3+t*l4;
+          line(x4,y,x4,y+h/2);
+          line(x4+l/2,y,x4+l/2,y+h/2);
+        }
+        posY -= 0.2*dimension();
+        fill(87);
+        noStroke();
+        textAlign(CENTER,CENTER);
+        textSize(0.11*dimension());
+        text(this.name,width/2+posX,height/2+posY-0.045*dimension());
+        textSize(0.067*dimension());
+        text(this.scales[sc].name,width/2+posX,height/2+posY+0.063*dimension());
         break;
       case 'violin' :
         posX -= 0.132*dimension();
