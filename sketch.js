@@ -1965,7 +1965,7 @@ class Selector {
             angle += 2*PI;
           }
         }
-        if(Math.abs(angle - a) > 2*PI/3) {
+        if(Math.abs(angle - a) > PI/12) {
           angle = a;
         }
         else {
@@ -2017,6 +2017,7 @@ var selector;
 
 var audioContext;
 var mic, freq;
+var fft = false;
 var audioSwitch = false;
 var micLevel;
 
@@ -2048,6 +2049,9 @@ function setup() {
     mic = new p5.AudioIn();
     micLevel = mic.getLevel();
     mic.start(startPitch);
+    //mic.start();
+    fft = new p5.FFT();
+    fft.setInput(mic);
   }
 
   // Start the audio context on a click/touch event
@@ -2056,7 +2060,29 @@ function setup() {
    });
 }
 
+var indice = 0;
+
 function draw() {
+  /*if(fft) {
+    if(indice) {
+      indice++;
+      indice %= 100;
+      return;
+    }
+    indice++;
+    var table = [];
+    for(var n = 0; n < 12; n++) {
+      var e = 0;
+      for(var o = 0; o < 10; o++) {
+        let f = 16.3515*exp((n+12*o)*log(2)/12);
+        fft.analyze()
+        e += fft.getEnergy(f);
+      }
+      e /= 11;
+      table.push(100*e/255);
+    }
+    //console.table(table);
+  }*/
 }
 
 function windowResized() {
