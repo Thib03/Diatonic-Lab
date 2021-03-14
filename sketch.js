@@ -568,7 +568,7 @@ class Scale {
               ch = true;
             }
           }
-    		  this.notes[i].draw(type,posX,posY,fact,deg(this.notes[i].d-this.notes[0].d+1),ch);
+    		  this.notes[i].draw(type,posX,posY,fact,deg(this.notes[i].d-this.notes[0].d+1),ch,fret);
     		}
         posX = -0.07*dimension();
         fill(87);
@@ -2025,7 +2025,7 @@ function setup() {
   createCanvas(windowWidth,windowHeight);
 	background(255);
 
-  micButton = new Clickable();
+  /*micButton = new Clickable();
   micButton.color = 217;
   micButton.cornerRadius = 0;
   micButton.strokeWeight = 0;
@@ -2036,14 +2036,14 @@ function setup() {
   }
 
   micButton.resize(0.1*dimension(),0.1*dimension());
-  micButton.locate(width/2,height/2);
+  micButton.locate(width/2,height/2);*/
 
   selector = new Selector();
 
   selector.position(0.4*dimension(),0.35*dimension(),0.48);
   selector.draw();
 
-  if(navigator.platform.includes('Win') ||
+  /*if(navigator.platform.includes('Win') ||
      navigator.platform.includes('Mac')) {
     audioContext = getAudioContext();
     mic = new p5.AudioIn();
@@ -2057,7 +2057,7 @@ function setup() {
   // Start the audio context on a click/touch event
   userStartAudio().then(function() {
      console.log('Audio started');
-   });
+   });*/
 }
 
 var indice = 0;
